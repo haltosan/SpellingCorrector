@@ -1,6 +1,7 @@
 package spell;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class Trie implements ITrie{
 
@@ -42,7 +43,7 @@ public class Trie implements ITrie{
 
     public INode recursiveFind(String word, INode curNode){
         if(word.length() < 1){
-            return null; //for some reason, the string is lost/no node found
+            return null; //if for some reason, the string is lost/no node found
         }
         if(word.length() < 2){
             if(curNode.getChildren()[word.charAt(0) - 'a'].getValue() > 0) {
@@ -71,15 +72,6 @@ public class Trie implements ITrie{
         return recursiveToString(root, "", "").substring(1); //the first char is \n; this fixes my lazy fence-post-less algorithm
     }
     private static String recursiveToString(INode node, String curWord, String returnWord){
-        /*
-        for node:
-            if node.count > 0:
-                returnWord += curWord + indexToChar
-            if node is null:
-                pass
-            else:
-                recurse(node, curWord + indexToChar, returnWord
-         */
         String localReturnWord = returnWord;
         for(int i = 0; i <  node.getChildren().length; i++){
             INode child = node.getChildren()[i];
@@ -96,14 +88,63 @@ public class Trie implements ITrie{
         return localReturnWord;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if(this.getClass() != o.getClass()){
+            return false;
+        }
+        Trie tryMe = (Trie)o;
+        return recursiveEquals(this.root, tryMe.root);
+    }
+
+    private boolean recursiveEquals(INode myNode, INode otherNode) {
+        if(myNode.getValue() != otherNode.getValue()){
+            System.out.println("false on values");
+            return false;
+        }
+        INode[] myChildren = myNode.getChildren();
+        INode[] otherChildren = myNode.getChildren();
+        for(int i = 0; i < myChildren.length; i++){
+            if(myChildren[i] != null && otherChildren[i] != null){
+                System.out.println("recurse "+' '+i);
+                if(!recursiveEquals(myChildren[i], otherChildren[i])){ //any false's should go up the chain
+                    System.out.println("chain");
+                    return false;
+                }
+            }
+            if(myChildren[i] == null && otherChildren[i] != null){
+                System.out.println("null");
+                return false;
+            }
+            if(myChildren[i] != null && otherChildren[i] == null){
+                System.out.println("null");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int i;
+        INode[] childs = root.getChildren();
+        for(i = 0; i < childs.length; i++){
+            if(childs[i] != null){
+                break;
+            }
+        }
+        return i * nodeCount * wordCount * 31;
+    }
+
     public static void main(String[] args){
         Trie tre = new Trie();
-        tre.add("hi");
-        tre.add("this");
-        tre.add("is");
-        tre.add("a");
-        tre.add("bucket");
-        tre.add("ho");
-        System.out.print('|'+tre.toString()+'|');
+        Trie b = new Trie();
+        tre.add("zyx");
+        b.add("zyx");
+        System.out.println(tre.equals(b));
+        System.out.println(b.equals(tre)+"\n");
+        tre.add("abcde");
+        System.out.println(tre.equals(b));
+        System.out.println(b.equals(tre));
     }
 }
