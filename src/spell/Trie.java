@@ -106,7 +106,7 @@ public class Trie implements ITrie{
         INode[] otherChildren = myNode.getChildren();
         for(int i = 0; i < myChildren.length; i++){
             if(myChildren[i] != null && otherChildren[i] != null){
-                System.out.println("recurse "+' '+i);
+                System.out.println("recurse "+' '+ i + " " + myChildren[i].getValue() + " " + otherChildren[i].getValue());
                 if(!recursiveEquals(myChildren[i], otherChildren[i])){ //any false's should go up the chain
                     System.out.println("chain");
                     return false;
@@ -140,11 +140,7 @@ public class Trie implements ITrie{
         Trie tre = new Trie();
         Trie b = new Trie();
         tre.add("zyx");
-        b.add("zyx");
-        System.out.println(tre.equals(b));
-        System.out.println(b.equals(tre)+"\n");
-        tre.add("abcde");
-        System.out.println(tre.equals(b));
-        System.out.println(b.equals(tre));
+        b.add("abd");
+
     }
 }
