@@ -94,31 +94,36 @@ public class Trie implements ITrie{
             return false;
         }
         Trie tryMe = (Trie)o;
-        return recursiveEquals(this.root, tryMe.root);
-    }
-
-    private boolean recursiveEquals(INode myNode, INode otherNode) {
-        if(myNode.getValue() != otherNode.getValue()){
-            System.out.println("false on values");
+        try{
+            return recursiveEquals(this.root, tryMe.root);
+        }
+        catch (Exception e){
             return false;
         }
-        INode[] myChildren = myNode.getChildren();
-        INode[] otherChildren = myNode.getChildren();
-        for(int i = 0; i < myChildren.length; i++){
-            if(myChildren[i] != null && otherChildren[i] != null){
-                System.out.println("recurse "+' '+ i + " " + myChildren[i].getValue() + " " + otherChildren[i].getValue());
-                if(!recursiveEquals(myChildren[i], otherChildren[i])){ //any false's should go up the chain
-                    System.out.println("chain");
-                    return false;
-                }
+
+    }
+
+    private boolean recursiveEquals(INode myNode, INode otherNode) throws Exception {
+        if(myNode.getValue() != otherNode.getValue()){
+            throw new Exception("Not equal");
+        }
+        for(int i = 0; i < myNode.getChildren().length; i++){
+            INode myChild = myNode.getChildren()[i];
+            INode otherChild = otherNode.getChildren()[i];
+            if(myChild == otherChild){ //tests if they're both null
+                continue;
             }
-            if(myChildren[i] == null && otherChildren[i] != null){
-                System.out.println("null");
-                return false;
+            if(myChild == null){ //tests if only 1 is null
+                throw new Exception("Not equal");
             }
-            if(myChildren[i] != null && otherChildren[i] == null){
-                System.out.println("null");
-                return false;
+            else if(otherChild == null){
+                throw new Exception("Not equal");
+            }
+            else if(myNode.getChildren()[i].getValue() != otherNode.getChildren()[i].getValue()){ //if both are not null, check values
+                throw new Exception("Not equal");
+            }
+            else{ //if equal, look at children
+                recursiveEquals(myNode.getChildren()[i], otherNode.getChildren()[i]);
             }
         }
         return true;
@@ -140,7 +145,13 @@ public class Trie implements ITrie{
         Trie tre = new Trie();
         Trie b = new Trie();
         tre.add("zyx");
-        b.add("abd");
+        b.add("zyx");
+        System.out.println(tre.equals(b));
+        System.out.println(b.equals(tre)+"\n");
+
+        tre.add("zyx");
+        System.out.println(tre.equals(b));
+        System.out.println(b.equals(tre)+"\n");
 
     }
 }
