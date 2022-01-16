@@ -29,8 +29,33 @@ public class SpellCorrector implements ISpellCorrector{
         return null;
     }
 
-    private String[] oneEditWords(String word){
+    //TODO: make private
+    public String[] oneEditWords(String word){
+        //n + (n-1) + 25n + 26(n+1) = 53n + 25
         String[] words = new String[word.length() * 53 + 25]; //computed as total from all __ distance functions
+        String[] deletionWords = deletion(word);
+        String[] transposeWords = transpose(word);
+        String[] alterWords = alter(word);
+        String[] insertWords = insert(word);
+
+        int nonce = 0;
+        for(String delWord : deletionWords){
+            words[nonce] = delWord;
+            nonce++;
+        }
+        for(String transWord : transposeWords){
+            words[nonce] = transWord;
+            nonce++;
+        }
+        for(String alterWord : alterWords){
+            words[nonce] = alterWord;
+            nonce++;
+        }
+        for(String insWord : insertWords){
+            words[nonce] = insWord;
+            nonce++;
+        }
+
         return words;
     }
 
@@ -81,7 +106,16 @@ public class SpellCorrector implements ISpellCorrector{
     }
 
     public static void main(String[] args) throws Exception{
-
+        SpellCorrector spellCorrector = new SpellCorrector();
+        String[] result = spellCorrector.oneEditWords("hi");
+        int count = 0;
+        for(String i : result){
+            System.out.print(i+" ");
+            count++;
+            if(count % 30 == 0){
+                System.out.println("");
+            }
+        }
 
     }
 }
