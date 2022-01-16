@@ -43,9 +43,19 @@ public class SpellCorrector implements ISpellCorrector{
         return words;
     }
 
+    //TODO: make private
+    public String[] transpose(String word){
+        String[] words = new String[word.length()-1];
+        words[0] = String.valueOf(word.charAt(1)) + word.charAt(0) + word.substring(2);
+        for(int i = 1; i < word.length()-1; i++){
+            words[i] = word.substring(0, i) + word.charAt(i + 1) + word.charAt(i) + word.substring(i + 2);
+        }
+        return words;
+    }
+
     public static void main(String[] args) throws Exception{
         SpellCorrector spellCorrector = new SpellCorrector();
-        String[] a = spellCorrector.deletion("bird");
+        String[] a = spellCorrector.transpose("cupcake");
         for(String i : a){
             System.out.println(i);
         }
