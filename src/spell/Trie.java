@@ -71,6 +71,7 @@ public class Trie implements ITrie{
     public String toString() {
         return recursiveToString(root, "", "").substring(1); //the first char is \n; this fixes my lazy fence-post-less algorithm
     }
+
     private static String recursiveToString(INode node, String curWord, String returnWord){
         String localReturnWord = returnWord;
         for(int i = 0; i <  node.getChildren().length; i++){
