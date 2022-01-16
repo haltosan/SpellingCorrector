@@ -2,13 +2,12 @@ package spell;
 
 import java.io.IOException;
 import java.io.File;  // Import the File class
-import java.util.Scanner; // Import the Scanner class to read text files
+import java.util.*;
 
 
 public class SpellCorrector implements ISpellCorrector{
 
-    //TODO: make private
-    public Trie trie;
+    private final Trie trie;
 
     public SpellCorrector() {
         this.trie = new Trie();
@@ -26,11 +25,61 @@ public class SpellCorrector implements ISpellCorrector{
 
     @Override
     public String suggestSimilarWord(String inputWord) {
+        //find the word exactly
+        INode canFind = trie.find(inputWord);
+        if(canFind != null){
+            return inputWord;
+        }
+        //look at one edit distance
+        TreeSet<String> oneEdits = new TreeSet<>(oneEditWords(inputWord));
+        Dictionary<String, Integer> found = getFound(oneEdits);
+        if(!found.isEmpty()){
+            Set<String> ties = getBestMatch(found);
+            return (String)ties.toArray()[0]; //I hope this gives the 1st item alphabetically; let's see
+        }
+
+        //look at 2 edit distance words
+        TreeSet<String> twoEdits = new TreeSet<>();
+        for(String oneEditWord : oneEdits){
+            twoEdits.addAll(oneEditWords(oneEditWord)); //I think this works...
+        }
+        Dictionary<String, Integer> found2 = getFound(twoEdits);
+        if(!found2.isEmpty()){
+            Set<String> ties = getBestMatch(found2);
+            return (String)ties.toArray()[0];
+        }
         return null;
     }
 
-    //TODO: make private
-    public String[] oneEditWords(String word){
+    private Set<String> getBestMatch(Dictionary<String, Integer> found) {
+        int maxScore = -1;
+        Enumeration<String> enumeration = found.keys();
+        Set<String> ties = new TreeSet<>();
+        while(enumeration.hasMoreElements()){
+            String potentialWord = enumeration.nextElement(); //don't ask why, but this is how I'm iterating through this
+            if(found.get(potentialWord) > maxScore){
+                ties = new TreeSet<>(); //reset the ties
+                maxScore = found.get(potentialWord);
+            }
+            if(found.get(potentialWord) == maxScore){
+                ties.add(potentialWord);
+            }
+        }
+        return ties;
+    }
+
+    private Dictionary<String, Integer> getFound(Set<String> nEdits) {
+        Dictionary<String, Integer> found = new Hashtable<>();
+        for(String potentialWord : nEdits){
+            INode lookup = trie.find(potentialWord);
+            if(lookup != null){
+                found.put(potentialWord, lookup.getValue());
+            }
+        }
+        return found;
+    }
+
+    private List<String> oneEditWords(String word){
         //n + (n-1) + 25n + 26(n+1) = 53n + 25
         String[] words = new String[word.length() * 53 + 25]; //computed as total from all __ distance functions
         String[] deletionWords = deletion(word);
@@ -56,7 +105,7 @@ public class SpellCorrector implements ISpellCorrector{
             nonce++;
         }
 
-        return words;
+        return List.of(words);
     }
 
     private String[] deletion(String word){
@@ -107,15 +156,8 @@ public class SpellCorrector implements ISpellCorrector{
 
     public static void main(String[] args) throws Exception{
         SpellCorrector spellCorrector = new SpellCorrector();
-        String[] result = spellCorrector.oneEditWords("hi");
-        int count = 0;
-        for(String i : result){
-            System.out.print(i+" ");
-            count++;
-            if(count % 30 == 0){
-                System.out.println("");
-            }
-        }
+        spellCorrector.useDictionary("C:\\Users\\haltosan\\OneDrive\\Desktop\\projects\\spell test\\custom.txt");
+        System.out.println(spellCorrector.suggestSimilarWord("yeal"));
 
     }
 }

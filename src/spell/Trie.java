@@ -42,10 +42,16 @@ public class Trie implements ITrie{
     }
 
     public INode recursiveFind(String word, INode curNode){
+        if(curNode == null){
+            return null;
+        }
         if(word.length() < 1){
             return null; //if for some reason, the string is lost/no node found
         }
         if(word.length() < 2){
+            if(curNode.getChildren()[word.charAt(0) - 'a'] == null){
+                return null;
+            }
             if(curNode.getChildren()[word.charAt(0) - 'a'].getValue() > 0) {
                 return curNode.getChildren()[word.charAt(0) - 'a']; //the child node that matches firstLetter's index
                 //charAt may be redundant, but it is a safe way to ensure we're doing char subtraction
