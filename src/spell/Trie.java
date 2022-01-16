@@ -17,6 +17,9 @@ public class Trie implements ITrie{
 
     @Override
     public void add(String word) { //staging function to recursive add
+        if(find(word) != null){
+            wordCount--; //workaround for duplicates
+        }
         addRecursive(word.toLowerCase(), root);
     }
 
@@ -78,9 +81,10 @@ public class Trie implements ITrie{
         return recursiveToString(root, "", "").substring(1); //the first char is \n; this fixes my lazy fence-post-less algorithm
     }
 
-    private static String recursiveToString(INode node, String curWord, String returnWord){
+    private String recursiveToString(INode node, String curWord, String returnWord){
         String localReturnWord = returnWord;
-        for(int i = 0; i <  node.getChildren().length; i++){
+
+        for(int i = 0; i < node.getChildren().length; i++){
             INode child = node.getChildren()[i];
             char curChar = (char)('a' + i);
             if(child == null){
@@ -93,6 +97,7 @@ public class Trie implements ITrie{
 
         }
         return localReturnWord;
+
     }
 
     @Override
@@ -150,15 +155,9 @@ public class Trie implements ITrie{
 
     public static void main(String[] args){
         Trie tre = new Trie();
-        Trie b = new Trie();
-        tre.add("zyx");
-        b.add("zyx");
-        System.out.println(tre.equals(b));
-        System.out.println(b.equals(tre)+"\n");
-
-        tre.add("zyx");
-        System.out.println(tre.equals(b));
-        System.out.println(b.equals(tre)+"\n");
+        tre.add("cares");
+        System.out.println(tre);
+        System.out.println(tre.find("cares"));
 
     }
 }

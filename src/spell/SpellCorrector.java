@@ -25,6 +25,7 @@ public class SpellCorrector implements ISpellCorrector{
 
     @Override
     public String suggestSimilarWord(String inputWord) {
+        inputWord = inputWord.toLowerCase();
         //find the word exactly
         INode canFind = trie.find(inputWord);
         if(canFind != null){
@@ -79,37 +80,28 @@ public class SpellCorrector implements ISpellCorrector{
         return found;
     }
 
-    private List<String> oneEditWords(String word){
+    private TreeSet<String> oneEditWords(String word){
         //n + (n-1) + 25n + 26(n+1) = 53n + 25
-        String[] words = new String[word.length() * 53 + 25]; //computed as total from all __ distance functions
-        String[] deletionWords = deletion(word);
-        String[] transposeWords = transpose(word);
+        TreeSet<String> words = new TreeSet<>();
+        String[] deletionWords = word.length() < 2 ? new String[0] : deletion(word);
+        String[] transposeWords = word.length() < 2 ? new String[0] : transpose(word);
         String[] alterWords = alter(word);
         String[] insertWords = insert(word);
 
-        int nonce = 0;
-        for(String delWord : deletionWords){
-            words[nonce] = delWord;
-            nonce++;
-        }
-        for(String transWord : transposeWords){
-            words[nonce] = transWord;
-            nonce++;
-        }
-        for(String alterWord : alterWords){
-            words[nonce] = alterWord;
-            nonce++;
-        }
-        for(String insWord : insertWords){
-            words[nonce] = insWord;
-            nonce++;
-        }
 
-        return List.of(words);
+        words.addAll(Arrays.asList(deletionWords));
+        words.addAll(Arrays.asList(transposeWords));
+        words.addAll(Arrays.asList(alterWords));
+        words.addAll(Arrays.asList(insertWords));
+
+        return words;
     }
 
     private String[] deletion(String word){
         String[] words = new String[word.length()];
+        if(word.length() < 1){
+            return new String[0];
+        }
         words[0] = word.substring(1);
         for(int i = 1; i < word.length(); i++){
             words[i] = word.substring(0,i) + word.substring(i+1);
@@ -118,6 +110,9 @@ public class SpellCorrector implements ISpellCorrector{
     }
 
     private String[] transpose(String word){
+        if(word.length() < 2){
+            return new String[0];
+        }
         String[] words = new String[word.length()-1];
         words[0] = String.valueOf(word.charAt(1)) + word.charAt(0) + word.substring(2);
         for(int i = 1; i < word.length()-1; i++){
