@@ -67,8 +67,21 @@ public class SpellCorrector implements ISpellCorrector{
         return words;
     }
 
+    private String[] insert(String word){
+        String[] words = new String[(word.length() + 1) * 26];
+        int nonce = 0;
+
+        for(int i = 0; i < word.length() + 1; i++){
+            for(char alpha = 'a'; alpha <= 'z'; alpha++){
+                words[nonce] = word.substring(0, i) + alpha + word.substring(i);
+                nonce++;
+            }
+        }
+        return words;
+    }
+
     public static void main(String[] args) throws Exception{
-        throw new Exception("ahh");
+
 
     }
 }
