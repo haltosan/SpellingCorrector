@@ -1,7 +1,5 @@
 package spell;
 
-import java.util.Locale;
-import java.util.Objects;
 
 public class Trie implements ITrie{
 
@@ -32,7 +30,8 @@ public class Trie implements ITrie{
         char firstLetter = word.charAt(0);
         String newWord = word.substring(1);
         INode[] children = curNode.getChildren();
-        if(children[firstLetter - 'a'] == null) {
+        INode child = children[firstLetter - 'a'];
+        if(child == null) {
             children[firstLetter - 'a'] = new Node();
             nodeCount++;
         }
@@ -51,19 +50,20 @@ public class Trie implements ITrie{
         if(word.length() < 1){
             return null; //if for some reason, the string is lost/no node found
         }
+        INode child = curNode.getChildren()[word.charAt(0) - 'a'];
         if(word.length() < 2){
-            if(curNode.getChildren()[word.charAt(0) - 'a'] == null){
+            if(child == null){
                 return null;
             }
-            if(curNode.getChildren()[word.charAt(0) - 'a'].getValue() > 0) {
-                return curNode.getChildren()[word.charAt(0) - 'a']; //the child node that matches firstLetter's index
+            if(child.getValue() > 0) {
+                return child; //the child node that matches firstLetter's index
                 //charAt may be redundant, but it is a safe way to ensure we're doing char subtraction
             }
             else{
                 return null;
             }
         }
-        return recursiveFind(word.substring(1) /*pops first letter off*/, curNode.getChildren()[word.charAt(0) - 'a'] /*same as above*/);
+        return recursiveFind(word.substring(1) /*pops first letter off*/, child /*same as above*/);
     }
 
     @Override
@@ -94,7 +94,6 @@ public class Trie implements ITrie{
                 localReturnWord = localReturnWord + '\n' + curWord + curChar; //new word added to list
             }
             localReturnWord = recursiveToString(child, curWord + curChar, localReturnWord);
-
         }
         return localReturnWord;
 
@@ -144,9 +143,9 @@ public class Trie implements ITrie{
     @Override
     public int hashCode() {
         int i;
-        INode[] childs = root.getChildren();
-        for(i = 0; i < childs.length; i++){
-            if(childs[i] != null){
+        INode[] children = root.getChildren();
+        for(i = 0; i < children.length; i++){
+            if(children[i] != null){
                 break;
             }
         }
@@ -154,10 +153,6 @@ public class Trie implements ITrie{
     }
 
     public static void main(String[] args){
-        Trie tre = new Trie();
-        tre.add("cares");
-        System.out.println(tre);
-        System.out.println(tre.find("cares"));
 
     }
 }

@@ -149,10 +149,6 @@ public class SpellCorrector implements ISpellCorrector{
         return words;
     }
 
-    public static void main(String[] args) throws Exception{
-        SpellCorrector spellCorrector = new SpellCorrector();
-        spellCorrector.useDictionary("C:\\Users\\haltosan\\OneDrive\\Desktop\\projects\\spell test\\custom.txt");
-        System.out.println(spellCorrector.suggestSimilarWord("yeal"));
-
+    public static void main(String[] args) {
     }
 }
